@@ -1,0 +1,21 @@
+# OS / Editor Caches
+*~
+*.swp
+*.bak
+.DS_Store
+
+# Application Session State & Window Geometry Caches
+.config/qimgv/savedState.conf
+
+# Runtime Logs / Sockets
+*.log
+*.sock
+
+# Matugen Generated Theme Outputs (Desktop targets)
+.config/hypr/subconfigurations/colors.lua
+.config/fuzzel/colors.ini
+.config/gtk-3.0/colors.css
+.config/gtk-4.0/colors.css
+.config/wlogout/colors.css
+.config/walker/colors.css
+.cache/wal/

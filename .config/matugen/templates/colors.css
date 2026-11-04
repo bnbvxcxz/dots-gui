@@ -1,0 +1,8 @@
+/* gen by matugen */
+<* for name, value in colors *>
+    @define-color {{name}} {{value.default.hex}};
+<* endfor *>
+
+@define-color blur_background {{colors.surface.default.rgba | set_alpha: 0.3}};
+@define-color blur_background8 {{colors.surface.default.rgba | set_alpha: 0.8}};
+

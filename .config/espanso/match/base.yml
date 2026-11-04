@@ -1,0 +1,54 @@
+# espanso match file
+
+# For a complete introduction, visit the official docs at: https://espanso.org/docs/
+
+# You can use this file to define the base matches (aka snippets)
+# that will be available in every application when using espanso.
+
+# Matches are substitution rules: when you type the "trigger" string
+# it gets replaced by the "replace" string.
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/espanso/espanso/dev/schemas/match.schema.json
+
+matches:
+  # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
+
+  # End emails
+  - trigger: ":br"
+    replace: "Thanks, \nOliver."
+
+ # ISO 8601 Date
+  - trigger: ":isodate"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%Y-%m-%d"
+
+  # Current UTC/Unix Epoch timestamp
+  - trigger: ":epoch"
+    replace: "{{epoch}}"
+    vars:
+      - name: epoch
+        type: shell
+        params:
+          cmd: "date +%s"
+
+  # Wrap current clipboard URL into Markdown format [text](clipboard)
+  - trigger: ":mdlink"
+    replace: "[$|$]({{clip}})"
+    vars:
+      - name: clip
+        type: clipboard
+
+  # Print the output of a shell command (fully commented out)
+  # - trigger: ":shell"
+  #   replace: "{{output}}"
+  #   vars:
+  #     - name: output
+  #       type: shell
+  #       params:
+  #         cmd: "echo 'Hello from your shell'"
+
+  # And much more! For more information, visit the docs: https://espanso.org/docs/
