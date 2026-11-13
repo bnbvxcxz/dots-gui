@@ -152,7 +152,7 @@ hl.gesture({
 })
 
 local terminal = "kitty"
-local fileManager = "kitty -e yazi"
+local fileManager = "dolphin"
 local menu = "fuzzel"
 local browser = "waterfox"
 
