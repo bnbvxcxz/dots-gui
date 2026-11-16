@@ -4,7 +4,7 @@ prefer = "value"
 [templates.kitty]
 input_path = '~/.config/matugen/templates/kitty-colors.conf'
 output_path = '~/.config/kitty/colors-matugen.conf'
-post_hook = 'pkill -SIGUSR1 kitty'
+post_hook = 'pkill -SIGUSR1 kitty || true'
 
 [templates.btop]
 input_path = '~/.config/matugen/templates/btop.theme'
@@ -14,7 +14,7 @@ post_hook = 'pkill -USR2 btop || true'
 [templates.hyprland]
 input_path = '~/.config/matugen/templates/hyprland-colors.lua'
 output_path = '~/.config/hypr/subconfigurations/colors.lua'
-post_hook = 'hyprctl reload'
+post_hook = 'sh -c "[ -n \"$HYPRLAND_INSTANCE_SIGNATURE\" ] && hyprctl reload || true"'
 
 [templates.fuzzel]
 input_path = "~/.config/matugen/templates/fuzzel.ini"
@@ -47,12 +47,12 @@ output_path = '~/.cache/wal/sequences'
 [templates.ohmyposh]
 input_path = '~/.config/matugen/templates/ohmyposh-colors.json'
 output_path = '~/.config/ohmyposh/colors.json'
-post_hook = "jq --slurpfile palette ~/.config/ohmyposh/colors.json '. + $palette[0]' ~/.config/ohmyposh/EDM115-newline.omp.json > /tmp/new_theme.json && mv /tmp/new_theme.json ~/.config/ohmyposh/EDM115-newline.omp.json"
+post_hook = "sh -c '[ -f ~/.config/ohmyposh/EDM115-newline.omp.json ] && jq --slurpfile palette ~/.config/ohmyposh/colors.json \". + \\$palette[0]\" ~/.config/ohmyposh/EDM115-newline.omp.json > /tmp/new_theme.json && mv /tmp/new_theme.json ~/.config/ohmyposh/EDM115-newline.omp.json || true'"
 
 [templates.quickshell]
 input_path = '~/.config/matugen/templates/quickshell.qml'
-output_path = '~/.config/quickshell/Theme.qml'
-post_hook = 'quickshell ipc call theme reload'
+output_path = '~/.config/quickshell/config/Theme.qml'
+post_hook = 'sh -c "pgrep -x quickshell >/dev/null && quickshell ipc call theme reload >/dev/null 2>&1 || true"'
 
 [templates.micro]
 input_path = '~/.config/matugen/templates/micro.micro'
@@ -69,3 +69,8 @@ output_path = "~/.config/kak/colors/matugen.kak"
 [templates.yazi]
 input_path = '~/.config/matugen/templates/yazi-theme.toml'
 output_path = '~/.config/yazi/theme.toml'
+
+[templates.niri]
+input_path = '~/.config/matugen/templates/niri-colors.kdl'
+output_path = '~/.config/niri/colors.kdl'
+post_hook = 'sh -c "[ -n \"$NIRI_SOCKET\" ] && niri msg action load-config-file || true"'

@@ -180,7 +180,8 @@ hl.bind("SUPER + CTRL + W", hl.dsp.exec_cmd("waypaper"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("quickshell ipc call drawer toggle"))
 hl.bind("PRINT", hl.dsp.exec_cmd("grimblast --freeze copysave area ".. home .. "/Pictures/Screenshots/$(date +'%Y-%m-%d-%H%M%S').png"))
 hl.bind("SUPER + ALT + L", hl.dsp.exec_cmd("pidof hyprlock || (hyprlock & sleep 1 && hyprctl dispatch dpms off)"))
-hl.bind("SUPER + ALT + backslash", hl.dsp.exec_cmd("hyprshutdown"))
+hl.bind("SUPER + ALT + backslash", hl.dsp.exec_cmd("hyprshutdown --post-cmd 'uwsm stop'"))
+
 
 -- Layout Toggles
 hl.bind("SUPER + S", hl.dsp.layout("swapsplit"))
