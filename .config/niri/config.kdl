@@ -1,5 +1,3 @@
-// Complete Niri configuration — matched to hyprland_4_FwO2.lua + Niri enhancements
-
 input {
     keyboard {
         xkb {
@@ -10,14 +8,12 @@ input {
     touchpad {
         tap
         dwt
-        // natural-scroll
     }
 
     mouse {
         accel-profile "flat"
     }
 
-    focus-follows-mouse max-scroll-amount="0%"
     workspace-auto-back-and-forth
 }
 
@@ -25,7 +21,6 @@ cursor {
     hide-when-typing
 }
 
-// Outputs (set eDP-1 scale to 1.333333 on 14aph8; change to 1 if using another host)
 output "DP-1" {
     position x=0 y=0
     scale 1
@@ -36,12 +31,11 @@ output "HDMI-A-1" {
     scale 1
 }
 
-// Host-specific output scale (generated per machine)
 include "./host.kdl"
 
 layout {
     gaps 0
-    center-focused-column "never"
+    center-focused-column "on-overflow"
 
     preset-column-widths {
         proportion 1.0
@@ -55,7 +49,6 @@ layout {
 
     default-column-width { proportion 0.5; }
 
-    // Matugen setup: focus-ring off, crisp 1px border & shadow initialized for include "./colors.kdl"
     background-color "transparent"
 
     focus-ring {
@@ -96,39 +89,38 @@ environment {
 }
 
 animations {
-    slowdown 0.55
+    slowdown 0.45
 
     horizontal-view-movement {
-        spring damping-ratio=0.91 stiffness=640 epsilon=0.0001
+        spring damping-ratio=0.92 stiffness=900 epsilon=0.0001
     }
 
     workspace-switch {
-        spring damping-ratio=0.91 stiffness=640 epsilon=0.0001
+        spring damping-ratio=0.92 stiffness=900 epsilon=0.0001
     }
 
     window-movement {
-        spring damping-ratio=0.91 stiffness=640 epsilon=0.0001
+        spring damping-ratio=0.92 stiffness=850 epsilon=0.0001
     }
 
     window-resize {
-        spring damping-ratio=0.91 stiffness=640 epsilon=0.0001
+        spring damping-ratio=0.92 stiffness=850 epsilon=0.0001
     }
 
     window-open {
-        duration-ms 150
+        duration-ms 120
         curve "ease-out-cubic"
     }
 
     window-close {
-        duration-ms 120
+        duration-ms 100
         curve "ease-out-quad"
     }
 
     overview-open-close {
-        spring damping-ratio=0.95 stiffness=1000 epsilon=0.0001
+        spring damping-ratio=0.95 stiffness=1100 epsilon=0.0001
     }
 }
-
 
 spawn-at-startup "waypaper" "--restore"
 spawn-at-startup "quickshell"
@@ -137,23 +129,13 @@ spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
 spawn-at-startup "hypridle"
 spawn-at-startup "sway-audio-idle-inhibit"
 
-// ####################
-// ### WINDOW RULES ###
-// ####################
+// Window Rules
 
-// Restore Kitty alpha transparency (stops Niri from drawing a solid border fill behind Kitty)
 window-rule {
     match app-id=r#"^kitty$"#
     draw-border-with-background false
 }
 
-// Open Waterfox wider by default
-window-rule {
-    match app-id=r#"^waterfox$"#
-    default-column-width { proportion 0.75; }
-}
-
-// Floating utility windows (translated from hyprland_4_FwO2.lua)
 window-rule {
     match app-id=r#"^waybar_update$"#
     open-floating true
@@ -167,14 +149,12 @@ window-rule {
     default-floating-position x=32 y=32 relative-to="top-right"
 }
 
-// Float Steam popups/friends list while keeping main Steam window tiled
 window-rule {
     match app-id=r#"^steam$"#
     exclude title=r#"^Steam$"#
     open-floating true
 }
 
-// Float MusicBee dialogs while keeping main window tiled
 window-rule {
     match app-id=r#"^musicbee\.exe$"#
     exclude title=r#"MusicBee"#
@@ -212,99 +192,101 @@ window-rule {
     block-out-from "screen-capture"
 }
 
-// ####################
-// ### KEYBINDINGS  ###
-// ####################
+// Keybindings
 
 binds {
-    // Niri hotkey cheat sheet
+    // System & Session
     Mod+Slash { show-hotkey-overlay; }
-
-    // Window & session actions
     Mod+Q { close-window; }
+    Mod+Delete { close-window; }
     Mod+Shift+Q hotkey-overlay-title="Force Kill Focused Window" { spawn "sh" "-c" "kill -9 $(niri msg -j focused-window | jq .pid)"; }
+    Mod+Backslash hotkey-overlay-title="Lock Screen" { spawn "sh" "-c" "pidof hyprlock || hyprlock"; }
+    Mod+Shift+Backslash hotkey-overlay-title="Lock & Sleep Monitors" { spawn "sh" "-c" "pidof hyprlock || (hyprlock & sleep 1 && niri msg action power-off-monitors)"; }
+    Mod+Shift+Escape { quit; }
+
+    // Window State & Layout
     Mod+F { fullscreen-window; }
-    Mod+M { maximize-column; }
+    Mod+M { maximize-window-to-edges; }
     Mod+T { toggle-window-floating; }
     Mod+Shift+T { switch-focus-between-floating-and-tiling; }
-    Mod+Backslash hotkey-overlay-title="Lock Screen" { spawn "sh" "-c" "pidof hyprlock || hyprlock"; }
-    Mod+Shift+Backslash { quit; }
-    Mod+Alt+L hotkey-overlay-title="Lock & Sleep Monitors" { spawn "sh" "-c" "pidof hyprlock || (hyprlock & sleep 1 && niri msg action power-off-monitors)"; }
-
-    // Niri Overview & Tabbed Columns
     Mod+Tab repeat=false { toggle-overview; }
-    Mod+W { toggle-column-tabbed-display; }
-
-    // Column Width / Height (100% -> 75% -> 50%), Centering & Stacking
+    Mod+O repeat=false { toggle-overview; }
     Mod+R { switch-preset-column-width; }
     Mod+Shift+R { switch-preset-window-height; }
     Mod+Ctrl+R { reset-window-height; }
     Mod+C { center-column; }
     Mod+Shift+C { center-window; }
     Mod+Ctrl+F { expand-column-to-available-width; }
+
+    // Stacking & Grouping
+    Mod+W { toggle-column-tabbed-display; }
+    Mod+G { toggle-column-tabbed-display; }
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
     Mod+Minus        { consume-or-expel-window-left; }
     Mod+Equal        { consume-or-expel-window-right; }
 
-    // Dynamic Screen-Share Casting (OBS / Discord / Zoom)
+    // Screen-Share Casting
     Mod+P       { set-dynamic-cast-window; }
     Mod+Shift+P { set-dynamic-cast-monitor; }
     Mod+Ctrl+P  { clear-dynamic-cast-target; }
 
-    // App launchers & utilities (matched to hyprland_4_FwO2.lua)
-    Mod+E { spawn "dolphin"; }
-    Mod+Return { spawn "kitty"; }
-    Mod+Ctrl+Return { spawn "fuzzel"; }
-    Mod+B { spawn "waterfox"; }
+    // Launchers & Utilities
+    Mod+E { spawn "sh" "-c" "niri msg action focus-column-first && dolphin"; }
+    Mod+Return { spawn "sh" "-c" "niri msg action focus-column-first && kitty"; }
+    Mod+Ctrl+Return { spawn "sh" "-c" "niri msg action focus-column-first && fuzzel"; }
+    Mod+B { spawn "sh" "-c" "niri msg action focus-column-first && waterfox"; }
     Mod+V hotkey-overlay-title="Clipboard History" { spawn "sh" "-c" "cliphist list | wofi --dmenu | cliphist decode | wl-copy"; }
     Mod+Ctrl+W { spawn "waypaper"; }
     Mod+N hotkey-overlay-title="Toggle Quickshell Drawer" { spawn "quickshell" "ipc" "call" "drawer" "toggle"; }
+
+    // Screenshots
     Print { screenshot; }
     Shift+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
-    Mod+Shift+S { screenshot; }
-    Mod+Ctrl+Shift+S hotkey-overlay-title="Screenshot Clicked Window" {
+    Mod+S { screenshot; }
+    Mod+Shift+S { screenshot-screen; }
+    Mod+Ctrl+S hotkey-overlay-title="Screenshot Clicked Window" {
         spawn "sh" "-c" "id=$(niri msg --json pick-window | jq -r .id) && [ -n \"$id\" ] && niri msg action screenshot-window --id \"$id\""
     }
 
-    // Focus movement (HJKL + arrows)
+    // Horizontal Column Focus & Move (Mod = Focus, Mod+Shift = Move)
     Mod+H { focus-column-left; }
     Mod+L { focus-column-right; }
-    Mod+K { focus-window-up; }
-    Mod+J { focus-window-down; }
     Mod+Left { focus-column-left; }
     Mod+Right { focus-column-right; }
-    Mod+Up { focus-window-up; }
-    Mod+Down { focus-window-down; }
-
-    // Move windows/columns (HJKL + arrows)
     Mod+Shift+H { move-column-left; }
     Mod+Shift+L { move-column-right; }
-    Mod+Shift+K { move-window-up; }
-    Mod+Shift+J { move-window-down; }
     Mod+Shift+Left { move-column-left; }
     Mod+Shift+Right { move-column-right; }
-    Mod+Shift+Up { move-window-up; }
-    Mod+Shift+Down { move-window-down; }
 
-   // Resize windows
-    Mod+Ctrl+H     { set-column-width "-10%"; }
-    Mod+Ctrl+L     { set-column-width "+10%"; }
-    Mod+Ctrl+Left  { set-column-width "-10%"; }
-    Mod+Ctrl+Right { set-column-width "+10%"; }
-    Mod+Ctrl+K     { set-window-height "-50%"; }
-    Mod+Ctrl+J     { set-window-height "+50%"; }
-    Mod+Ctrl+Up    { set-window-height "-50%"; }
-    Mod+Ctrl+Down  { set-window-height "+50%"; }
+    // Vertical Window Focus & Move Inside Column (Mod = Focus, Mod+Shift = Move)
+    Mod+U { focus-window-down; }
+    Mod+I { focus-window-up; }
+    Mod+Shift+U { move-window-down; }
+    Mod+Shift+I { move-window-up; }
 
-    // Fast vertical workspace hopping (home-row friendly)
-    Mod+U      { focus-workspace-down; }
-    Mod+I      { focus-workspace-up; }
-    Mod+Ctrl+U { move-column-to-workspace-down; }
-    Mod+Ctrl+I { move-column-to-workspace-up; }
+    // Jump Workspace Ends (Mod = Focus, Mod+Shift = Move)
+    Mod+A    { focus-column-first; }
+    Mod+D    { focus-column-last; }
+    Mod+Home { focus-column-first; }
+    Mod+End  { focus-column-last; }
+    Mod+Shift+A    { move-column-to-first; }
+    Mod+Shift+D    { move-column-to-last; }
+    Mod+Shift+Home { move-column-to-first; }
+    Mod+Shift+End  { move-column-to-last; }
 
-    // Mouse wheel scrolling across columns & workspaces
+    // Workspace Navigation (Mod = Focus, Mod+Shift = Move)
+    Mod+J    { focus-workspace-down; }
+    Mod+K    { focus-workspace-up; }
+    Mod+Down { focus-workspace-down; }
+    Mod+Up   { focus-workspace-up; }
+    Mod+Shift+J    { move-column-to-workspace-down; }
+    Mod+Shift+K    { move-column-to-workspace-up; }
+    Mod+Shift+Down { move-column-to-workspace-down; }
+    Mod+Shift+Up   { move-column-to-workspace-up; }
+
+    // Mouse Scroll
     Mod+WheelScrollDown       { focus-column-right; }
     Mod+WheelScrollUp         { focus-column-left; }
     Mod+Shift+WheelScrollDown { move-column-right; }
@@ -312,7 +294,7 @@ binds {
     Mod+Ctrl+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
     Mod+Ctrl+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
 
-    // Workspaces 1..10
+    // Workspaces 1-10 (Mod = Focus, Mod+Shift = Move)
     Mod+1 { focus-workspace 1; }
     Mod+2 { focus-workspace 2; }
     Mod+3 { focus-workspace 3; }
@@ -323,7 +305,6 @@ binds {
     Mod+8 { focus-workspace 8; }
     Mod+9 { focus-workspace 9; }
     Mod+0 { focus-workspace 10; }
-
     Mod+Shift+1 { move-column-to-workspace 1; }
     Mod+Shift+2 { move-column-to-workspace 2; }
     Mod+Shift+3 { move-column-to-workspace 3; }
@@ -335,13 +316,13 @@ binds {
     Mod+Shift+9 { move-column-to-workspace 9; }
     Mod+Shift+0 { move-column-to-workspace 10; }
 
-    // Monitor focus & moving columns across monitors
+    // Monitors (Mod = Focus, Mod+Shift = Move)
     Mod+Comma { focus-monitor-left; }
     Mod+Period { focus-monitor-right; }
     Mod+Shift+Comma { move-column-to-monitor-left; }
     Mod+Shift+Period { move-column-to-monitor-right; }
 
-    // Media & brightness controls
+    // Hardware & Media
     XF86AudioRaiseVolume allow-when-locked=true { spawn "quickshell" "ipc" "call" "hw" "volUp"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "quickshell" "ipc" "call" "hw" "volDown"; }
     XF86AudioMute allow-when-locked=true { spawn "quickshell" "ipc" "call" "hw" "volMute"; }
@@ -354,5 +335,4 @@ binds {
     XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
 }
 
-// Include Matugen-generated colors
 include "./colors.kdl"
